@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Repairs">
+<meta name="theme-color" content="#1e40af">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Repairs</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#cbd5e1;--brand:#1e40af;--ok:#059669;--bad:#dc2626;--warn:#b45309;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--card:#1e293b;--text:#f8fafc;--muted:#94a3b8;--line:#334155;--brand:#3b82f6;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f172a;--card:#1e293b;--text:#f8fafc;--muted:#94a3b8;--line:#334155;--brand:#3b82f6;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+body{background:var(--bg);color:var(--text);font-size:15px;padding-bottom:84px}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);z-index:10;background:var(--brand)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--brand);color:#fff;padding:12px 16px;font-weight:700;letter-spacing:.3px}
+main{max-width:720px;margin:0 auto;padding:12px}
+h2{font-size:1.25rem;font-weight:700}
+h3{font-size:.95rem;font-weight:700;margin-bottom:10px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.grid{display:grid;gap:8px}.g2{grid-template-columns:1fr 1fr}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(82px,1fr));gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 4px;text-align:center;cursor:pointer}
+.stat b{display:block;font-size:.98rem}.stat span{font-size:.7rem;color:var(--muted)}
+.btn{display:block;width:100%;border:0;border-radius:8px;background:var(--brand);color:#fff;padding:12px;font-weight:600;font-size:.95rem;text-align:center;cursor:pointer;text-decoration:none}
+.btn.sec{background:#64748b}.btn.ok{background:var(--ok)}.btn.bad{background:var(--bad)}.btn.wa{background:#25d366}
+.btn.sm{display:inline-block;width:auto;min-height:36px;padding:7px 12px;font-size:.8rem}
+label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:4px}
+.in{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);font-size:16px;margin-bottom:10px}
+textarea.in{min-height:60px;resize:vertical}
+.sub{font-size:.8rem;color:var(--muted)}
+.row{display:flex;justify-content:space-between;gap:10px;padding:12px 0 12px 10px;border-left:4px solid var(--c,var(--line));border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.right{text-align:right;flex-shrink:0}
+.tag{display:inline-block;color:#fff;border-radius:12px;padding:2px 8px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.due{color:var(--bad);font-size:.72rem;font-weight:700}.paid{color:var(--ok);font-size:.72rem;font-weight:700}
+.pills{display:flex;gap:6px;overflow-x:auto;white-space:nowrap;margin:10px 0}
+.pill{flex-shrink:0;min-height:34px;display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:6px 12px;font-size:.78rem;cursor:pointer}
+.pill.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.kv span{color:var(--muted)}.kv b{text-align:right;word-break:break-word}
+.tl{padding:6px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.pay{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.empty{text-align:center;color:var(--muted);padding:18px;font-size:.9rem}
+.dash-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:4px 0 14px}
+.dash-head h2{font-size:1.45rem;letter-spacing:-.02em}
+.dash-head .sub{font-size:.8rem;color:var(--muted);margin-bottom:2px}
+.hero{background:var(--brand);color:#fff;border-color:transparent;padding:18px 18px 16px}
+.hero .hl{font-size:.82rem;opacity:.85}
+.hero .hv{font-size:2rem;font-weight:700;letter-spacing:-.02em;margin:4px 0 14px;font-variant-numeric:tabular-nums}
+.hero .hbar{height:6px;border-radius:4px;background:rgba(255,255,255,.25);overflow:hidden}
+.hero .hbar i{display:block;height:100%;background:#fff;border-radius:4px}
+.hero .hs{font-size:.8rem;opacity:.85;margin-top:8px}
+.head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.head-row h3{margin:0}
+.link{background:none;border:0;color:var(--brand);font-size:.85rem;font-weight:600;cursor:pointer;padding:0}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.kpis3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi span{display:block;font-size:.75rem;color:var(--muted);margin-bottom:2px}
+.kpi b{font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums}
+.bar{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--line);margin-bottom:14px}
+.bar i{display:block;height:100%}
+.lgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.lg{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:.85rem;cursor:pointer;border-bottom:1px solid var(--line)}
+.lg i{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.lg span{flex:1;color:var(--muted)}
+.lg b{font-variant-numeric:tabular-nums}
+.help p{font-size:.92rem;line-height:1.5;margin:8px 0}.notes{margin:6px 0 10px 18px;font-size:.92rem;line-height:1.5}.notes li{margin:5px 0}
+.phgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}.ph{position:relative;height:96px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);cursor:pointer;display:flex;align-items:flex-end;justify-content:center}.ph img{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;object-fit:cover}.ph small{position:relative;background:rgba(0,0,0,.6);color:#fff;font-size:.65rem;padding:2px 6px;margin-bottom:6px;border-radius:4px}.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 10px}.thumbs img{width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.check{display:flex;align-items:center;gap:8px;margin-bottom:10px}.tw{position:relative;width:64px;height:64px}.tx{position:absolute;top:-6px;right:-6px;width:28px;height:28px;border-radius:50%;border:0;background:var(--bad);color:#fff;font-size:16px;line-height:28px;text-align:center;padding:0;cursor:pointer}.rt{width:100%;border-collapse:collapse;font-size:.85rem;min-width:480px}.rt th,.rt td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}.rt th:first-child,.rt td:first-child{text-align:left}.rt th{color:var(--muted);font-weight:600;font-size:.75rem}.rt tfoot td{font-weight:700}.loss{color:var(--bad);font-weight:700}.tablewrap{overflow-x:auto}.ico{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--tint,rgba(37,99,235,.12));color:var(--c,#2563eb)}
+.ico svg{width:20px;height:20px}
+.ico.blue{--tint:rgba(37,99,235,.12);--c:#2563eb}.ico.amber{--tint:rgba(217,119,6,.14);--c:#d97706}.ico.green{--tint:rgba(5,150,105,.14);--c:#059669}.ico.red{--tint:rgba(220,38,38,.12);--c:#dc2626}
+.banner{background:linear-gradient(135deg,#1e40af,#1e3a8a);color:#fff;border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;overflow:hidden}
+.bn-date{font-size:.78rem;opacity:.85}
+.banner h2{font-size:1.3rem;margin:2px 0;color:#fff;letter-spacing:-.01em}
+.banner p{font-size:.85rem;opacity:.9;margin:0}
+.bn-btn{margin-top:10px;background:#fff;color:#1e40af;border:0;border-radius:8px;padding:8px 14px;font-weight:700;font-size:.85rem;cursor:pointer}
+.bn-art{width:120px;height:auto;flex-shrink:0}
+.kcards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.kc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.kc .ico{margin-bottom:4px}
+.kc .lbl,.step .lbl{font-size:.78rem;color:var(--muted)}
+.kc b{font-size:1.2rem;font-weight:700;font-variant-numeric:tabular-nums}
+.pipe{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.step{display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:10px;padding:10px;text-align:left;cursor:pointer;color:var(--text)}
+.step b{font-size:1.15rem;font-variant-numeric:tabular-nums}
+@media (min-width:640px){.kcards{grid-template-columns:repeat(4,1fr)}.pipe{grid-template-columns:repeat(6,1fr)}}
+.rp-sel{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:10px;padding:8px 12px;font-weight:700;font-size:.9rem;min-width:96px}
+.rp-sel option{color:#0f172a;background:#fff}
+.mlist{display:flex;flex-direction:column;gap:8px}
+.mrow{width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;color:var(--text)}
+.mrow.on{border-color:var(--brand);box-shadow:inset 3px 0 0 var(--brand)}
+.mtop{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.mtop b{font-size:.98rem}
+.mtop .sub{margin-right:auto}
+.gain{color:var(--ok);font-weight:700;font-variant-numeric:tabular-nums}
+.mbar{height:8px;background:var(--bg);border-radius:6px;overflow:hidden;margin:9px 0 8px}
+.mbar i{display:block;height:100%;border-radius:6px}
+.mbar i.pos{background:var(--ok)}.mbar i.neg{background:var(--bad)}
+.msub{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:.78rem;color:var(--muted)}
+.rp-h{font-size:.92rem;font-weight:700;margin:16px 0 8px}
+.jlist{display:flex;flex-direction:column}
+.jrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.jrow:last-child{border-bottom:0}
+.jrow .sub{font-size:.8rem;color:var(--muted);margin-top:2px}
+.jrow .amt{font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;padding-top:2px}
+.btn:disabled{opacity:.5;cursor:wait}.hist{display:none;font-size:.82rem;background:rgba(59,130,246,.12);padding:8px;border-radius:6px;margin-bottom:10px}
+#nosave{display:none;background:#fef3c7;color:#78350f;padding:10px;border-radius:8px;margin-bottom:12px;font-size:.85rem}
+#nosave.on{display:block}
+nav{position:fixed;left:0;right:0;bottom:0;height:calc(60px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:1px solid var(--line);display:flex;z-index:20}
+nav button{flex:1;border:0;background:none;color:var(--muted);font-size:.7rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+nav button b{font-size:1.2rem;line-height:1}
+nav button.on{color:var(--brand);font-weight:700}
+.modal{display:none;position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.5);z-index:30;padding:16px;align-items:center;justify-content:center}
+.modal.on{display:flex}
+.sheet{background:var(--card);border-radius:12px;padding:16px;width:100%;max-width:440px;max-height:90vh;overflow:auto}
+.sheet h3{font-size:1.1rem}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:#0f172a;color:#fff;padding:10px 14px;border-radius:8px;font-size:.85rem;width:max-content;max-width:90%;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none;z-index:40}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.rc{background:#fff;color:#000;font-family:Arial,sans-serif;font-size:12px;padding:12px;border:1px solid #cbd5e1}
+.rc h4{font-size:11px;background:#e2e8f0;padding:3px 6px;margin:8px 0 4px;border-left:3px solid #1e40af}
+.rc .kv{border-color:#ccc}.rc .kv span{color:#334155}.rc .kv b{color:#000}
+.rc hr{border:0;border-top:1px dashed #000;margin:8px 0}
+#print-area{display:none}
+@media print{body{background:#fff;color:#000;padding:0}body>*:not(#print-area){display:none!important}#print-area{display:block!important}.rc{border:0}@page{margin:5mm}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 18.5h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.5 3.5a5 5 0 0 0-4.6 6.9L3.8 17.5a2.1 2.1 0 0 0 3 3l7.1-6.1a5 5 0 0 0 6.9-4.6l-3 1.2-2.6-.8-.8-2.6 1.2-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 12.5l2.7 2.6 5.3-5.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 12.5h2.5M5 6l10-2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5zM3.5 7.5L12 12l8.5-4.5M12 12v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+<symbol id="i-chip" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6.5a3 3 0 0 1 6 0V8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16M7 16v-5M12 16V7M17 16v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M15 7h6v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
+<header><span id="brand">CRESCENT MOBILES</span></header>
+<main>
+<div id="nosave"><span id="nosave-msg"></span> <button class="btn sec sm" onclick="start()">Try again</button></div>
+
+<section id="v-dash" class="view on">
+  <div class="banner">
+    <div class="bn-text">
+      <div class="bn-date" id="dash-date"></div>
+      <h2>Repair overview</h2>
+      <p>Jobs, payments and parts in one place.</p>
+      <button class="bn-btn" onclick="newJob()">+ New repair</button>
+    </div>
+    <svg class="bn-art" viewBox="0 0 150 120" aria-hidden="true">
+      <circle cx="112" cy="36" r="30" fill="#fff" opacity=".08"/>
+      <rect x="50" y="10" width="54" height="100" rx="10" fill="#fff"/>
+      <rect x="56" y="22" width="42" height="72" rx="4" fill="#dbeafe"/>
+      <path d="M61 78L70 64l8 6 12-16 6 8" fill="none" stroke="#1e40af" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="77" cy="102" r="3.5" fill="#cbd5e1"/>
+      <g transform="rotate(35 112 62)"><rect x="109" y="24" width="6" height="58" rx="3" fill="#e2e8f0"/><rect x="107" y="16" width="10" height="11" rx="2.5" fill="#fbbf24"/></g>
+      <g transform="rotate(-30 36 70)"><rect x="33" y="40" width="6" height="56" rx="3" fill="#e2e8f0"/><path d="M27 38a9 9 0 0 1 18 0v7H27z" fill="#94a3b8"/></g>
+    </svg>
+  </div>
+  <div class="kcards" id="kcards"></div>
+  <div class="card"><h3>Repair pipeline</h3><div class="pipe" id="stats"></div></div>
+  <div class="card"><h3>Today</h3><div class="kpis3" id="today"></div></div>
+  <div class="card"><h3>Money</h3><div class="kcards" id="money"></div></div>
+  <div class="card"><div class="head-row"><h3>Recent repairs</h3><button class="link" onclick="go('list')">View all</button></div><div id="recent"></div></div>
+</section>
+<section id="v-list" class="view">
+  <input class="in" id="q" placeholder="Search by job ID, name, phone, model or IMEI" oninput="renderList()">
+  <div class="pills" id="pills"></div>
+  <div class="card" style="padding:0 12px"><div id="list"></div></div>
+</section>
+
+<section id="v-form" class="view">
+<form class="card" id="rf" onsubmit="saveJob(event)">
+  <h3 id="ftitle">New repair job</h3>
+  <div class="grid g2">
+    <div><label>Customer name *</label><input class="in" id="f-name" required></div>
+    <div><label>Mobile number *</label><input class="in" id="f-phone" type="tel" required oninput="checkHist()"></div>
+  </div>
+  <div class="hist" id="hist"></div>
+  <div class="grid g2">
+    <div><label>Brand *</label><input class="in" id="f-brand" placeholder="e.g. Samsung" required></div>
+    <div><label>Model *</label><input class="in" id="f-model" placeholder="e.g. Galaxy M31" required></div>
+    <div><label>IMEI 1</label><input class="in" id="f-imei1"></div>
+    <div><label>IMEI 2</label><input class="in" id="f-imei2"></div>
+    <div><label>Passcode / pattern</label><input class="in" id="f-pass"></div>
+    <div><label>Status</label><select class="in" id="f-status"></select></div>
+  </div>
+  <label>Device condition</label><input class="in" id="f-condition" placeholder="Scratches, cracked screen, etc.">
+  <label>Accessories received</label><input class="in" id="f-accessories" placeholder="SIM tray, case, etc.">
+  <label>Customer complaint *</label><textarea class="in" id="f-complaint" required></textarea>
+  <label>Technician notes</label><textarea class="in" id="f-notes"></textarea>
+  <label>Repair done notes</label><textarea class="in" id="f-done" placeholder="What was fixed or replaced"></textarea>
+  <label>Parts warranty</label><input class="in" id="f-warranty" placeholder="e.g. Battery: 6 months">
+  <div class="grid g2">
+    <div><label>Repair cost (₹)</label><input class="in" id="f-cost" type="number" min="0" value="0" oninput="calcForm()"></div>
+    <div><label>Discount (₹)</label><input class="in" id="f-disc" type="number" min="0" value="0" oninput="calcForm()"></div>
+    <div><label>Parts cost (₹)</label><input class="in" id="f-parts" type="number" min="0" value="0" oninput="calcForm()"></div>
+    <div id="adv-wrap"><label>Advance received (₹)</label><input class="in" id="f-adv" type="number" min="0" value="0" oninput="calcForm()"></div>
+  </div>
+  <div class="grid g2" style="background:rgba(127,127,127,.08);padding:10px;border-radius:8px;margin-bottom:12px">
+    <div><span class="sub">Estimated profit</span><div><b id="f-profit" style="color:var(--ok)">₹0</b></div></div>
+    <div><span class="sub">Balance due</span><div><b id="f-bal" style="color:var(--bad)">₹0</b></div></div>
+  </div>
+  <div class="grid g2">
+    <div><label>ID proof photo</label><input class="in" type="file" accept="image/*" multiple onchange="pickPhotos(this,'id')"></div>
+    <div><label>Phone condition photos</label><input class="in" type="file" accept="image/*" multiple onchange="pickPhotos(this,'device')"></div>
+  </div>
+  <div class="thumbs" id="f-thumbs"></div>
+  <button class="btn ok" id="save-btn" type="submit">Save &amp; print receipt</button>
+  <button class="btn sec" type="button" style="margin-top:8px" onclick="go('dash')">Cancel</button>
+</form>
+</section>
+
+<section id="v-detail" class="view">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;gap:8px">
+      <div><h2 id="d-job"></h2><span class="tag" id="d-badge" style="margin-top:6px"></span></div>
+      <button class="btn sec sm" onclick="go('list')">Back</button>
+    </div>
+    <p class="sub" id="d-meta" style="margin-top:4px"></p>
+  </div>
+  <div class="card"><h3>Customer &amp; device</h3><div id="d-info"></div></div>
+  <div class="card"><h3>Diagnosis &amp; warranty</h3><div id="d-diag"></div></div>
+  <div class="card"><h3>Photos</h3><div class="phgrid" id="d-photos"></div></div>
+  <div class="card"><h3>Status history</h3><div id="d-time" style="max-height:160px;overflow:auto"></div></div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="margin:0">Money</h3><button class="btn ok sm" onclick="openPay()">+ Add payment</button></div>
+    <div id="d-money"></div>
+    <h3 style="margin:14px 0 6px">Payments</h3>
+    <div id="d-pays"></div>
+  </div>
+  <div class="card grid">
+    <a class="btn wa" id="d-wa" target="_blank" rel="noopener">💬 Send update on WhatsApp</a>
+    <button class="btn" onclick="showReceipt()">🖨️ View &amp; print receipt</button>
+    <div class="grid g2"><button class="btn sec" onclick="openStatus()">🔄 Change status</button><button class="btn sec" onclick="editJob()">✏️ Edit</button></div>
+    <button class="btn bad" onclick="sure(this,delCur)">🗑️ Delete record</button>
+  </div>
+</section>
+
+<section id="v-reports" class="view">
+  <div class="banner">
+    <div class="bn-text">
+      <div class="bn-date">Profit and loss</div>
+      <h2 id="rp-title"></h2>
+      <p id="rp-sub"></p>
+    </div>
+    <select id="rp-year" class="rp-sel" aria-label="Year" onchange="setYear(this.value)"></select>
+  </div>
+  <div class="kcards" id="rp-kpis"></div>
+  <div class="card">
+    <div class="head-row"><h3>Months</h3><span class="sub" id="rp-mcount"></span></div>
+    <div class="mlist" id="rp-months"></div>
+  </div>
+  <div class="card" id="rp-detail-card">
+    <div class="head-row"><h3 id="rp-dtitle">Month details</h3></div>
+    <div id="rp-detail"></div>
+  </div>
+  <div class="card">
+    <div class="head-row"><h3>Years</h3></div>
+    <div class="mlist" id="rp-years"></div>
+  </div>
+</section>
+<section id="v-settings" class="view">
+  <div class="card help">
+    <h3>Saving your data</h3>
+    <p><b>Where your records are saved:</b> in this web browser, on this computer. They are not sent anywhere, and you do not need internet to use this file.</p>
+    <p><b>To keep your records safe:</b></p>
+    <ul class="notes">
+      <li><b>Open this file in a normal window.</b> Do not use a private or incognito window. Records added there are deleted when you close that window.</li>
+      <li><b>Use the same browser every time.</b> Chrome, Edge and Firefox each keep their own records.</li>
+      <li><b>Do not clear your browser history or site data.</b> That deletes your records and photos.</li>
+      <li><b>Photos are saved in this browser too.</b> ID photos are private, so keep backup files safe.</li>
+      <li><b>Keep the file in the same folder.</b> Moving it may hide your records.</li>
+      <li><b>Turn on automatic daily backup</b> in the box above, or make a backup every week.</li>
+      <li><b>Make a backup every week.</b> Use Download backup below, then save the file in email, Google Drive or on a USB stick.</li>
+    </ul>
+    <p><b>If your records disappear:</b> open this file in the same browser, go to Restore data below, choose your latest backup, then tap Restore data and tap it again to confirm.</p>
+  </div>
+  <div class="card">
+    <h3>Shop logo</h3>
+    <img id="s-logo-img" alt="" style="display:none;max-width:90px;max-height:90px;margin-bottom:10px">
+    <input class="in" type="file" accept="image/*" onchange="pickLogo(this)">
+    <button class="btn sec" onclick="sure(this,removeLogo)">Remove logo</button>
+    <p class="sub" style="margin-top:8px">Shown at the top of receipts. Large pictures are shrunk automatically.</p>
+  </div>
+  <form class="card" onsubmit="saveSettings(event)">
+    <h3>Shop details</h3>
+    <label>Shop name</label><input class="in" id="s-name" required>
+    <label>Address</label><input class="in" id="s-address">
+    <label>Phone</label><input class="in" id="s-phone">
+    <label>GST / registration number</label><input class="in" id="s-gst">
+    <label>Receipt footer note</label><input class="in" id="s-footer">
+    <label>Terms &amp; conditions</label><textarea class="in" id="s-terms" style="min-height:90px"></textarea>
+    <label>Next job number</label><input class="in" id="s-next" type="number" min="1">
+    <p class="sub" style="margin:-4px 0 12px">New jobs use this number, then go up by one.</p>
+    <button class="btn" type="submit">Save settings</button>
+  </form>
+  <div class="card help">
+    <h3>Automatic daily backup</h3>
+    <label class="check"><input type="checkbox" id="ab-on" onchange="setAuto()"> Save a backup every day</label>
+    <label>Time</label><input class="in" type="time" id="ab-time" value="21:00" onchange="setAuto()">
+    <p class="sub" id="ab-status"></p>
+    <p>The backup is saved as a file in your downloads at the time you choose, using this device's clock. The app must be open at that time. If it was closed, the backup is saved as soon as you open the app. On a phone, if the file does not download, tap Download backup instead.</p>
+  </div>
+  <div class="card">
+    <h3>Backup &amp; restore</h3>
+    <p class="sub" style="margin-bottom:10px">Download a backup regularly. See Saving your data at the top of Settings.</p>
+    <button class="btn ok" onclick="backup()">⬇️ Download backup (JSON)</button>
+    <label style="margin-top:14px">Restore from a backup file</label>
+    <input class="in" type="file" id="restore-file" accept=".json,application/json">
+    <button class="btn sec" onclick="sure(this,restore)">⬆️ Restore data</button>
+    <p class="sub" style="margin:8px 0 14px">Restoring replaces current records. Backups from the old app work here too.</p>
+    <button class="btn bad" onclick="sure(this,wipe)">⚠️ Delete all repair records</button>
+  </div>
+</section>
+</main>
+
+<nav>
+  <button data-v="dash" class="on" onclick="go('dash')"><b>📊</b>Dashboard</button>
+  <button data-v="list" onclick="go('list')"><b>📱</b>Repairs</button>
+  <button onclick="newJob()"><b>➕</b>New job</button>
+  <button data-v="reports" onclick="go('reports')"><b>📈</b>Reports</button>
+  <button data-v="settings" onclick="go('settings')"><b>⚙️</b>Settings</button>
+</nav>
+
+<div class="modal" id="m-status"><div class="sheet">
+  <h3>Update status</h3>
+  <label>Status</label><select class="in" id="ms-sel"></select>
+  <label>Note (optional)</label><input class="in" id="ms-note" placeholder="e.g. Waiting for screen">
+  <div class="grid g2"><button class="btn ok" onclick="saveStatus()">Update</button><button class="btn sec" onclick="hide('m-status')">Cancel</button></div>
+</div></div>
+
+<div class="modal" id="m-pay"><div class="sheet">
+  <h3 id="mp-title">Add payment</h3>
+  <p class="sub" id="mp-bal" style="margin:-4px 0 12px"></p>
+  <label>Amount (₹)</label><input class="in" id="mp-amt" type="number" min="1">
+  <label>Date</label><input class="in" id="mp-date" type="date">
+  <label>Method</label><select class="in" id="mp-m"><option>Cash</option><option>UPI / GPay / PhonePe</option><option>Card</option><option>Bank transfer</option></select>
+  <label>Discount (₹, optional)</label><input class="in" id="mp-disc" type="number" min="0" value="0">
+  <label>Note / reference</label><input class="in" id="mp-note">
+  <div class="grid g2"><button class="btn ok" onclick="savePay()">Save</button><button class="btn sec" onclick="hide('m-pay')">Cancel</button></div>
+</div></div>
+
+<div class="modal" id="m-rc"><div class="sheet">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h3 style="margin:0">Receipt</h3><button class="btn sec sm" onclick="hide('m-rc')">Close</button></div>
+  <div id="rc-box"></div>
+  <div class="grid" style="margin-top:12px"><a class="btn wa" id="rc-wa" target="_blank" rel="noopener">💬 Send via WhatsApp</a><button class="btn" onclick="printRc()">🖨️ Save &amp; print receipt</button></div>
+</div></div>
+
+<div class="modal" id="m-photo"><div class="sheet">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h3 style="margin:0">Photo</h3><button class="btn sec sm" onclick="hide('m-photo')">Close</button></div>
+  <img id="ph-img" alt="" style="width:100%;border-radius:8px">
+  <button class="btn bad" style="margin-top:12px" onclick="sure(this,delPhoto)">Delete photo</button>
+</div></div>
+<div class="toast" id="toast"></div>
+<div id="print-area"></div>
+
+<script>
+const STATUSES=["Received","Diagnosing","Waiting for Parts","Repairing","Ready","Delivered"];
+const COLORS={"Received":"#64748b","Diagnosing":"#8b5cf6","Waiting for Parts":"#f59e0b","Repairing":"#0284c7","Ready":"#10b981","Delivered":"#059669"};
+const MAP={name:"name",phone:"phone",brand:"brand",model:"model",imei1:"imei1",imei2:"imei2",pass:"passcode",condition:"condition",accessories:"accessories",complaint:"complaint",notes:"notes",done:"doneNotes",warranty:"partsWarranty"};
+const SHOP_KEYS=["name","address","phone","gst","footer","terms"];
+const DEF_SHOP={name:"CRESCENT MOBILES",address:"Near More Super Market, Zahirabad, India",phone:"+919676838151",gst:"",footer:"Thank you for choosing Crescent Mobiles!",terms:"1. 30 days warranty on replaced screens/parts.\n2. No warranty for physical or liquid damage.\n3. Devices not collected within 60 days will be disposed of."};
+let repairs=[],shop={...DEF_SHOP},db=null,loaded=false,curId=null,editId=null,payEdit=null,filter="All",wq=Promise.resolve();
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num=v=>Math.max(0,parseFloat(v)||0);
+const rs=n=>"₹"+Number(n).toLocaleString("en-IN",{maximumFractionDigits:2});
+const now=()=>new Date().toLocaleString("en-IN");
+const today=()=>new Date().toLocaleDateString("en-IN");
+const byId=id=>repairs.find(r=>r.id===id);
+const sorted=()=>repairs.slice().sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+const rows=a=>a.map(([k,v])=>`<div class="kv"><span>${k}</span><b>${esc(v||"N/A")}</b></div>`).join("");
+const show=id=>$(id).classList.add("on");
+const hide=id=>$(id).classList.remove("on");
+
+function money(r){const cost=num(r.cost),disc=num(r.discount),final=Math.max(0,cost-disc),paid=(r.payments||[]).reduce((a,p)=>a+num(p.amount),0),parts=num(r.partsCost);return{cost,disc,final,paid,parts,bal:final-paid,profit:final-parts}}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),2600)}
+function queue(job){try{const x=job();if(x&&x.catch)x.catch(()=>toast("Could not save. Check that this browser has enough storage space."))}catch(e){toast("Could not save. Check that this browser has enough storage space.")}}
+function render(){renderDash();renderList();if($("v-detail").classList.contains("on"))renderDetail()}
+function applyShop(){$("brand").textContent=shop.name||"Repair Manager";document.title="Repairs"}
+function normShop(s){const m={...DEF_SHOP,...s};if(m.phone==="+91 9876543210")m.phone=DEF_SHOP.phone;if(m.address==="Main Road, Zaheerabad")m.address=DEF_SHOP.address;if(!String(m.logo||"").startsWith("data:image/")||String(m.logo).length>150000)m.logo="";return m}
+function fillShop(){SHOP_KEYS.forEach(k=>$("s-"+k).value=shop[k]||"");$("s-next").value=shop.nextNo||1;showLogo()}
+function showLogo(){const i=$("s-logo-img");if(shop.logo){i.src=shop.logo;i.style.display="block"}else{i.removeAttribute("src");i.style.display="none"}}
+function go(v){if(v!=="form")editId=null;document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));if(v==="list")renderList();if(v==="dash")renderDash();if(v==="settings")fillShop();if(v==="reports")renderReports();scrollTo(0,0)}
+function openRepair(id){curId=id;if(!byId(id))return go("list");renderDetail();go("detail")}
+
+function saveRepair(r){const i=repairs.findIndex(x=>x.id===r.id);if(i>=0)repairs[i]=r;else repairs.unshift(r);render();queue(()=>db&&db.collection("repairs").doc(r.id).set(r))}
+function removeRepair(id){repairs=repairs.filter(x=>x.id!==id);render();queue(()=>db&&db.collection("repairs").doc(id).delete())}
+function saveShopData(s){shop=s;applyShop();queue(()=>db&&db.doc("settings/shop").set(s))}
+
+function makeLocalDb(){
+  const P="crescent_v1/",listeners=[];
+  const get=k=>{try{return JSON.parse(localStorage.getItem(P+k))}catch(e){return null}};
+  const notify=()=>listeners.forEach(f=>f());
+  const keysOf=()=>{try{return Object.keys(localStorage)}catch(e){return []}};
+  const docRef=path=>({
+    set:async d=>{try{localStorage.setItem(P+path,JSON.stringify(d))}catch(e){toast("Storage is full. Download a backup and remove old records.")}notify()},
+    delete:async()=>{try{localStorage.removeItem(P+path)}catch(e){}notify()},
+    onSnapshot:next=>{const f=()=>{const v=get(path);next({exists:v!==null,data:()=>v||undefined})};listeners.push(f);f();return()=>{}}
+  });
+  const colRef=name=>({
+    doc:id=>docRef(name+"/"+id),
+    onSnapshot:next=>{const f=()=>{const pre=P+name+"/";const docs=keysOf().filter(k=>k.startsWith(pre)).map(k=>{const id=k.slice(pre.length),v=get(name+"/"+id);return{id,exists:true,data:()=>v}});next({docs})};listeners.push(f);f();return()=>{}}
+  });
+  return{collection:colRef,doc:docRef};
+}
+let subscribed=false;
+async function start(){
+  $("nosave").classList.remove("on");let cl=null;db=makeLocalDb();
+  if(db){if(!subscribed){subscribed=true;
+    db.collection("repairs").onSnapshot(s=>{repairs=s.docs.filter(d=>d.exists).map(d=>({...d.data(),id:d.id}));loaded=true;render()},()=>toast("Records can’t be updated right now."));
+    db.doc("settings/shop").onSnapshot(s=>{if(s.exists){shop=normShop(s.data());applyShop();showLogo()}},()=>{});
+  }}else{$("nosave-msg").innerHTML=cl?"Saving isn’t connected yet. Sign in to Claude, then tap Try again.":"This copy can’t save records. <a href=\"https://claude.ai/artifact/TEtdBBeZaRf2oN4oZPKKub\" target=\"_blank\" rel=\"noopener\">Open the app from its claude.ai link</a>.";$("nosave").classList.add("on");loaded=true}
+  render();
+}
+
+const STEP_ICON={"Received":"box","Diagnosing":"chip","Waiting for Parts":"clock","Repairing":"wrench","Ready":"check","Delivered":"bag"};
+function renderDash(){
+  const c={};STATUSES.forEach(s=>c[s]=0);let rev=0,parts=0,paid=0,bal=0;
+  repairs.forEach(r=>{const s=r.status||"Received";c[s]=(c[s]||0)+1;const m=money(r);rev+=m.final;parts+=m.parts;paid+=m.paid;bal+=m.bal});
+  const total=repairs.length,td=today(),inRepair=c["Received"]+c["Diagnosing"]+c["Waiting for Parts"]+c["Repairing"],ready=c["Ready"]||0;
+  const got=repairs.reduce((a,r)=>a+(r.payments||[]).filter(p=>p.date===td).reduce((b,p)=>b+num(p.amount),0),0);
+  $("dash-date").textContent=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const K=(ic,cls,label,val)=>`<div class="kc"><span class="ico ${cls}"><svg><use href="#i-${ic}"/></svg></span><span class="lbl">${label}</span><b>${val}</b></div>`;
+  $("kcards").innerHTML=K("phone","blue","Total jobs",total)+K("wrench","amber","In repair",inRepair)+K("check","green","Ready for pickup",ready)+K("wallet","red","Balance due",rs(bal));
+  $("stats").innerHTML=STATUSES.map(s=>`<button class="step" style="--c:${COLORS[s]}" data-f="${esc(s)}" onclick="filterTo(this.dataset.f)"><span class="ico" style="--tint:${COLORS[s]}24;--c:${COLORS[s]}"><svg><use href="#i-${STEP_ICON[s]}"/></svg></span><span class="lbl">${esc(s)}</span><b>${c[s]}</b></button>`).join("");
+  $("today").innerHTML=[["Jobs received",repairs.filter(r=>r.createdDate===td).length],["Collected",rs(got)],["Ready for pickup",ready]].map(([l,v])=>`<div class="kpi"><span>${l}</span><b>${v}</b></div>`).join("");
+  const pl=rev-parts;
+  $("money").innerHTML=K("chart","blue","Revenue",rs(rev))+K("wallet","green","Total collected",rs(paid))+K("box","amber","Parts cost",rs(parts))+K("trend",pl<0?"red":"green",pl<0?"Loss":"Profit",rs(Math.abs(pl)));
+  $("recent").innerHTML=repairs.length?sorted().slice(0,5).map(item).join(""):`<p class="empty">${loaded?"No repair jobs yet. Tap “New repair” to add one.":"Loading…"}</p>`;
+}
+function item(r){const m=money(r),s=r.status||"Received",c=COLORS[s]||"#64748b";return`<div class="row" data-id="${esc(r.id)}" style="--c:${c}"><span class="ico" style="--tint:${c}24;--c:${c}"><svg><use href="#i-phone"/></svg></span><div style="min-width:0;flex:1"><b>${esc(r.brand)} ${esc(r.model)}</b> <span class="sub">${esc(r.jobId)}</span><div class="sub">${esc(r.name)} · ${esc(r.phone)}</div><div class="sub">${esc(r.complaint)}</div></div><div class="right"><span class="tag" style="background:${c}">${esc(s)}</span><div><b>${rs(m.final)}</b></div><div class="${m.bal>0?"due":"paid"}">${m.bal>0?"Due "+rs(m.bal):"Paid"}</div></div></div>`}
+function renderList(){const q=$("q").value.trim().toLowerCase();const list=sorted().filter(r=>(filter==="All"||(r.status||"Received")===filter)&&(!q||[r.jobId,r.name,r.phone,r.brand,r.model,r.imei1,r.imei2].some(v=>String(v||"").toLowerCase().includes(q))));$("list").innerHTML=list.length?list.map(item).join(""):`<p class="empty">${loaded?"No matching repair records.":"Loading…"}</p>`}
+function buildPills(){$("pills").innerHTML=["All",...STATUSES].map(f=>`<div class="pill${f===filter?" on":""}" data-f="${esc(f)}" onclick="setF(this.dataset.f)">${esc(f)}</div>`).join("")}
+function setF(f){filter=f;document.querySelectorAll(".pill").forEach(p=>p.classList.toggle("on",p.dataset.f===f));renderList()}
+function filterTo(f){setF(f);go("list")}
+
+function newJob(){editId=null;pendingPhotos=[];$("f-thumbs").innerHTML="";$("rf").reset();$("ftitle").textContent="New repair job";$("save-btn").textContent="Save & print receipt";$("adv-wrap").style.display="";checkHist();calcForm();go("form")}
+function editJob(){const r=byId(curId);if(!r)return;editId=r.id;pendingPhotos=[];$("f-thumbs").innerHTML="";$("ftitle").textContent="Edit job "+r.jobId;$("save-btn").textContent="Save changes";$("adv-wrap").style.display="none";for(const k in MAP)$("f-"+k).value=r[MAP[k]]||"";$("f-status").value=r.status||"Received";$("f-cost").value=num(r.cost);$("f-disc").value=num(r.discount);$("f-parts").value=num(r.partsCost);checkHist();calcForm();go("form")}
+function checkHist(){const p=$("f-phone").value.replace(/\D/g,""),box=$("hist"),m=p.length>=4?repairs.filter(r=>String(r.phone||"").replace(/\D/g,"").includes(p)&&r.id!==editId):[];box.style.display=m.length?"block":"none";box.innerHTML=m.length?`<b>${m.length} past record(s) for this number:</b>`+m.map(r=>`<div>• ${esc(r.brand)} ${esc(r.model)} (${esc(r.status||"Received")}) ${esc(r.jobId)}</div>`).join(""):""}
+function calcForm(){const old=editId&&byId(editId),final=Math.max(0,num($("f-cost").value)-num($("f-disc").value)),paid=old?money(old).paid:num($("f-adv").value);$("f-profit").textContent=rs(final-num($("f-parts").value));$("f-bal").textContent=rs(final-paid)}
+const jobCode=n=>'CM-'+String(n).padStart(5,'0');
+function newJobNo(){const used=new Set(repairs.map(r=>r.jobId));let n=Math.max(1,Math.floor(shop.nextNo)||1);while(used.has(jobCode(n)))n++;return n}
+let pendingPhotos=[],curPhoto=null,photoBusy=0;
+let photoIDB=null;
+const PH_LS="crescent_v1/photo/";
+function openPhotos(){if(!photoIDB)photoIDB=new Promise(res=>{const tm=setTimeout(()=>res(null),3000);try{const rq=indexedDB.open("crescent_photos",1);rq.onupgradeneeded=()=>rq.result.createObjectStore("photos",{keyPath:"id"});rq.onsuccess=()=>{clearTimeout(tm);res(rq.result)};rq.onerror=()=>{clearTimeout(tm);res(null)}}catch(e){clearTimeout(tm);res(null)}});return photoIDB}
+async function photoPut(v){const d=await openPhotos();if(d)return new Promise((res,rej)=>{const t=d.transaction("photos","readwrite");t.objectStore("photos").put(v);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)});localStorage.setItem(PH_LS+v.id,JSON.stringify(v))}
+async function photoDel(id){const d=await openPhotos();if(d)return new Promise((res,rej)=>{const t=d.transaction("photos","readwrite");t.objectStore("photos").delete(id);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)});localStorage.removeItem(PH_LS+id)}
+async function photoGet(id){const d=await openPhotos();if(d)return new Promise((res,rej)=>{const q=d.transaction("photos").objectStore("photos").get(id);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});return JSON.parse(localStorage.getItem(PH_LS+id)||"null")}
+async function photoAll(){const d=await openPhotos();if(d)return new Promise((res,rej)=>{const q=d.transaction("photos").objectStore("photos").getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});return Object.keys(localStorage).filter(k=>k.startsWith(PH_LS)).map(k=>JSON.parse(localStorage.getItem(k)))}
+async function photoReplace(list){const d=await openPhotos();if(d)return new Promise((res,rej)=>{const t=d.transaction("photos","readwrite"),os=t.objectStore("photos");os.clear();list.forEach(p=>os.put(p));t.oncomplete=()=>res();t.onerror=()=>rej(t.error)});Object.keys(localStorage).filter(k=>k.startsWith(PH_LS)).forEach(k=>localStorage.removeItem(k));list.forEach(p=>localStorage.setItem(PH_LS+p.id,JSON.stringify(p)))}
+function photoData(f){return new Promise((res,rej)=>{const rd=new FileReader();rd.onerror=rej;rd.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const k=Math.min(1,1000/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.naturalWidth*k));c.height=Math.max(1,Math.round(im.naturalHeight*k));const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",0.7))};im.src=rd.result};rd.readAsDataURL(f)})}
+function renderThumbs(){$("f-thumbs").innerHTML=pendingPhotos.map((p,i)=>`<div class="tw"><img src="${p.data}" alt=""><button type="button" class="tx" onclick="removePending(${i})" aria-label="Remove this photo">×</button></div>`).join("")}
+function removePending(i){pendingPhotos.splice(i,1);renderThumbs()}
+async function pickPhotos(input,kind){const files=[...(input.files||[])];input.value="";photoBusy++;$("save-btn").disabled=true;try{for(const f of files){try{pendingPhotos.push({kind,data:await photoData(f)})}catch(e){toast("One file could not be used as a photo. Try a JPEG or PNG.")}renderThumbs()}}finally{photoBusy--;$("save-btn").disabled=photoBusy>0}}
+async function attachPhotos(id){if(!pendingPhotos.length)return;const list=pendingPhotos;pendingPhotos=[];$("f-thumbs").innerHTML="";const refs=[];for(const ph of list){const pid="ph_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);try{await photoPut({id:pid,jobId:id,kind:ph.kind,data:ph.data});refs.push({id:pid,kind:ph.kind})}catch(e){}}const cur=byId(id);if(cur&&refs.length)saveRepair({...cur,photos:[...(cur.photos||[]),...refs]});const bad=list.length-refs.length;toast(bad?refs.length+" photo(s) saved. "+bad+" could not be saved in this browser.":refs.length+" photo(s) saved.")}
+function showPhotos(r){const box=$("d-photos"),list=r.photos||[];box.innerHTML=list.length?list.map(p=>`<div class="ph" data-ph="${esc(p.id)}"><small>${p.kind==="id"?"ID proof":"Phone"}</small></div>`).join(""):`<p class="sub">No photos yet.</p>`;list.forEach(async p=>{const v=await photoGet(p.id).catch(()=>null);const el=box.querySelector('[data-ph="'+p.id+'"]');if(v&&el&&!el.querySelector("img"))el.insertAdjacentHTML("afterbegin",`<img src="${v.data}" alt="">`)})}
+async function openPhoto(id){const v=await photoGet(id).catch(()=>null);if(!v)return toast("This photo is not available.");curPhoto=id;$("ph-img").src=v.data;show("m-photo")}
+function delPhoto(){const r=byId(curId);if(curPhoto&&r){photoDel(curPhoto).catch(()=>{});saveRepair({...r,photos:(r.photos||[]).filter(p=>p.id!==curPhoto)})}curPhoto=null;hide("m-photo")}
+function saveJob(e){
+  e.preventDefault();
+  if(photoBusy>0)return toast("Please wait, photos are still loading.");const was=editId,st=$("f-status").value;
+  if(was&&!byId(was)){toast("This record no longer exists.");return go("list")}
+  editId=null;
+  let r;
+  if(was){r={...byId(was)};if(r.status!==st)r.history=[...(r.history||[]),{status:st,date:now(),note:"Updated via edit form"}]}
+  else{const t=Date.now(),adv=num($("f-adv").value),no=newJobNo();saveShopData({...shop,nextNo:no+1});r={id:"rep_"+t.toString(36)+Math.random().toString(36).slice(2,6),jobId:jobCode(no),createdAt:new Date().toISOString(),createdDate:today(),payments:[],history:[{status:st,date:now(),note:"Device received and job created"}]};if(adv>0)r.payments.push({id:"pay_"+t,amount:adv,method:"Advance",date:today(),note:"Advance payment"})}
+  r.status=st;
+  for(const k in MAP)r[MAP[k]]=$("f-"+k).value.trim();
+  r.cost=num($("f-cost").value);r.discount=num($("f-disc").value);r.partsCost=num($("f-parts").value);
+  saveRepair(r);
+  openRepair(r.id);
+  attachPhotos(r.id);
+  if(!was)showReceipt();
+}
+
+function renderDetail(){
+  const r=byId(curId);if(!r)return go("list");
+  const m=money(r),s=r.status||"Received",h=r.history||[],last=h[h.length-1];
+  $("d-job").textContent=r.jobId||"";
+  $("d-badge").textContent=s;$("d-badge").style.background=COLORS[s]||"#64748b";
+  $("d-meta").textContent="Created "+(r.createdDate||"N/A")+(last?" · Last update "+last.date:"");
+  $("d-info").innerHTML=rows([["Customer",r.name],["Phone",r.phone],["Device",`${r.brand||""} ${r.model||""}`],["IMEI",[r.imei1,r.imei2].filter(Boolean).join(" / ")],["Passcode / pattern",r.passcode],["Condition",r.condition],["Accessories",r.accessories]]);
+  $("d-diag").innerHTML=rows([["Complaint",r.complaint],["Technician notes",r.notes],["Repair done",r.doneNotes],["Parts warranty",r.partsWarranty]]);
+  $("d-time").innerHTML=h.slice().reverse().map(x=>`<div class="tl"><b>${esc(x.status)}</b> <span class="sub">${esc(x.date)}</span>${x.note?`<br><i>${esc(x.note)}</i>`:""}</div>`).join("")||`<p class="sub">No history yet.</p>`;
+  $("d-money").innerHTML=rows([["Repair cost",rs(m.cost)],["Discount","−"+rs(m.disc)],["Final cost",rs(m.final)],["Parts cost",rs(m.parts)],["Profit",rs(m.profit)],["Received",rs(m.paid)],["Balance due",rs(m.bal)]]);
+  $("d-pays").innerHTML=(r.payments||[]).map(p=>`<div class="pay"><span>${p.amount?rs(p.amount)+" · "+esc(p.method)+" · ":""}${esc(p.date)}${p.discount?" · Discount "+rs(p.discount):""}</span><span class="sub">${esc(p.note)}</span><span><button class="btn sm sec" style="margin-left:6px" data-p="${esc(p.id)}" onclick="editPay(this.dataset.p)">Edit</button><button class="btn sm bad" style="margin-left:6px" data-p="${esc(p.id)}" onclick="sure(this,delPay)">Delete</button></span></div>`).join("")||`<p class="sub">No payments yet.</p>`;
+  $("d-wa").href=waLink(r,m);showPhotos(r);
+}
+function waLink(r,m){const t=`Hello *${r.name||"Customer"}*,\n\nRepair update from *${shop.name}*\n\nJob ID: *${r.jobId}*\nDevice: ${r.brand||""} ${r.model||""}\nIssue: ${r.complaint||"N/A"}\nStatus: *${r.status||"Received"}*\n\nTotal: ${rs(m.final)}\nPaid: ${rs(m.paid)}\nBalance due: ${rs(m.bal)}${r.partsWarranty?`\nWarranty: ${r.partsWarranty}`:""}\n\nThank you!\n${shop.phone||""}`;return"https://wa.me/"+String(r.phone||"").replace(/\D/g,"")+"?text="+encodeURIComponent(t)}
+
+function openStatus(){const r=byId(curId);if(!r)return;$("ms-sel").value=r.status||"Received";$("ms-note").value="";show("m-status")}
+function saveStatus(){const r=byId(curId);if(!r)return;const st=$("ms-sel").value,n={...r};n.status=st;n.history=[...(r.history||[]),{status:st,date:now(),note:$("ms-note").value.trim()||"Status update"}];saveRepair(n);hide("m-status")}
+function isoOf(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function isoFromDisplay(s){const p=String(s||"").split("/");if(p.length!==3||p[2].length!==4)return "";let d=+p[0],mo=+p[1];if(mo>12)[d,mo]=[mo,d];if(!(d>0&&mo>0&&d<=31&&mo<=12))return "";return p[2]+"-"+String(mo).padStart(2,"0")+"-"+String(d).padStart(2,"0")}
+const fmtDate=v=>new Date(v+"T00:00:00").toLocaleDateString("en-IN");
+function setMethod(m){const s=$("mp-m");m=m||"Cash";if(![...s.options].some(o=>o.value===m))s.add(new Option(m,m));s.value=m}
+function openPay(){payEdit=null;const r=byId(curId);$("mp-title").textContent="Add payment";$("mp-amt").value="";$("mp-disc").value="0";$("mp-note").value="";setMethod("Cash");$("mp-date").value=isoOf(new Date());$("mp-date").dataset.orig="";$("mp-bal").textContent="Balance due: "+rs(r?money(r).bal:0);show("m-pay")}
+function editPay(pid){const r=byId(curId),p=r&&(r.payments||[]).find(x=>x.id===pid);if(!p)return;payEdit=pid;$("mp-title").textContent="Edit payment";$("mp-amt").value=p.amount||"";$("mp-disc").value=p.discount||0;$("mp-note").value=p.note||"";setMethod(p.method);$("mp-date").value=isoFromDisplay(p.date);$("mp-date").dataset.orig=$("mp-date").value;$("mp-bal").textContent="Balance before this payment: "+rs(money({...r,discount:num(r.discount)-(p.discount||0),payments:r.payments.filter(x=>x.id!==pid)}).bal);show("m-pay")}
+function savePay(){const r=byId(curId);if(!r)return;const amt=num($("mp-amt").value),disc=num($("mp-disc").value),old=payEdit?(r.payments||[]).find(x=>x.id===payEdit):null;if(amt<=0&&disc<=0)return toast("Enter a payment or a discount.");const others=(r.payments||[]).filter(x=>!old||x.id!==old.id),baseDisc=num(r.discount)-(old?(old.discount||0):0),limit=money({cost:r.cost,discount:baseDisc,payments:others}).bal;if(amt+disc-limit>0.005)return toast("Payment and discount can’t be more than the balance due ("+rs(limit)+").");const dv=$("mp-date").value,date=old&&dv===$("mp-date").dataset.orig?old.date:(dv?fmtDate(dv):today());const p={id:old?old.id:"pay_"+Date.now(),amount:amt,discount:disc,method:$("mp-m").value,date:date,note:$("mp-note").value.trim()};saveRepair({...r,discount:Math.max(0,baseDisc+disc),payments:old?r.payments.map(x=>x.id===old.id?p:x):[...(r.payments||[]),p]});hide("m-pay")}
+
+function receiptHTML(r){const m=money(r);return`<div class="rc"><div style="text-align:center">${shop.logo?`<img src="${esc(shop.logo)}" alt="" style="display:block;margin:0 auto 6px;max-width:90px;max-height:90px">`:""}<b style="font-size:15px">${esc(shop.name)}</b><br>${esc(shop.address)}<br>Phone: ${esc(shop.phone)}${shop.gst?" | GST: "+esc(shop.gst):""}</div><hr><div class="kv"><b>Job ID: ${esc(r.jobId)}</b><span>${esc(r.createdDate)}</span></div><h4>Customer &amp; device</h4>${rows([["Customer",r.name],["Phone",r.phone],["Device",`${r.brand||""} ${r.model||""}`],["IMEI",r.imei1],["Condition",r.condition],["Accessories",r.accessories]].filter(x=>x[1]))}<h4>Fault &amp; warranty</h4>${rows([["Complaint",r.complaint],["Tech note",r.notes],["Repair done",r.doneNotes],["Warranty",r.partsWarranty]].filter(x=>x[1]))}<h4>Payment</h4>${rows([["Repair cost",rs(m.cost)],["Discount",m.disc?"−"+rs(m.disc):""],["Total cost",rs(m.final)],["Received",rs(m.paid)],["Balance pending",rs(m.bal)]].filter(x=>x[1]))}<hr><div style="font-size:10px;color:#334155"><b>Terms &amp; conditions</b><br>${esc(shop.terms).replace(/\n/g,"<br>")}</div><p style="text-align:center;font-weight:bold;margin-top:8px">${esc(shop.footer)}</p></div>`}
+function showReceipt(){const r=byId(curId);if(!r)return;$("rc-box").innerHTML=receiptHTML(r);$("rc-wa").href=waLink(r,money(r));show("m-rc")}
+function receiptFile(r){return `<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Receipt ${esc(r.jobId)}</title><style>body{font-family:Arial,sans-serif;margin:0;padding:16px;color:#000;background:#fff}.rc{max-width:360px;margin:0 auto;font-size:12px;border:1px solid #cbd5e1;padding:12px}.rc h4{font-size:11px;background:#e2e8f0;padding:3px 6px;margin:8px 0 4px;border-left:3px solid #1e40af}.kv{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px dashed #ccc}.kv span{color:#334155}.kv b{text-align:right;word-break:break-word}hr{border:0;border-top:1px dashed #000;margin:8px 0}.pbtn{display:block;margin:14px auto;padding:10px 18px;font-size:14px}@media print{.pbtn{display:none}.rc{border:0}@page{margin:5mm}}</style></head><body onload='setTimeout(print,400)'>${receiptHTML(r)}<button class='pbtn' onclick='print()'>Print</button></body></html>`}
+async function printRc(){const r=byId(curId);if(!r)return;try{const dl=null;if(!dl){$("print-area").innerHTML=receiptHTML(r);return window.print()}await dl.save({filename:'receipt-'+r.jobId+'.html',data:receiptFile(r)});toast('Receipt saved. Open the file to print it.')}catch(e){toast(e&&e.code==='declined'?'Receipt not saved.':'Could not save the receipt here.')}}
+
+function delPay(btn){const r=byId(curId),pid=btn.dataset.p;if(!r)return;const p=(r.payments||[]).find(x=>x.id===pid);if(!p)return;saveRepair({...r,discount:Math.max(0,num(r.discount)-(p.discount||0)),payments:r.payments.filter(x=>x.id!==pid)})}
+function delCur(){const id=curId,r=byId(id);(r&&r.photos||[]).forEach(p=>photoDel(p.id).catch(()=>{}));curId=null;removeRepair(id);go("list")}
+function wipe(){photoReplace([]).catch(()=>{});const ids=repairs.map(r=>r.id);repairs=[];render();queue(async()=>{if(db)for(const id of ids)await db.collection("repairs").doc(id).delete()});toast("All repair records deleted.")}
+function sure(btn,fn){const label=btn.dataset.label||(btn.dataset.label=btn.textContent);if(btn.dataset.armed){btn.dataset.armed="";btn.textContent=label;fn(btn);return}btn.dataset.armed="1";btn.textContent="Tap again to confirm";setTimeout(()=>{if(btn.dataset.armed){btn.dataset.armed="";btn.textContent=label}},4000)}
+function shrinkImage(f){return new Promise((res,rej)=>{const rd=new FileReader();rd.onerror=rej;rd.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const k=Math.min(1,300/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.naturalWidth*k));c.height=Math.max(1,Math.round(im.naturalHeight*k));const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);let out=c.toDataURL("image/jpeg",0.85);if(out.length>140000)out=c.toDataURL("image/jpeg",0.6);res(out)};im.src=rd.result};rd.readAsDataURL(f)})}
+async function pickLogo(input){const f=input.files&&input.files[0];if(!f)return;try{const data=await shrinkImage(f);input.value="";saveShopData({...shop,logo:data});showLogo();toast("Logo saved.")}catch(e){toast("That file can’t be used as a logo.")}}
+function removeLogo(){saveShopData({...shop,logo:""});showLogo();toast("Logo removed.")}
+const AB_KEY="crescent_v1/autobackup";
+let autoCfg={on:false,time:"21:00",last:0};
+function loadAuto(){try{autoCfg={...autoCfg,...JSON.parse(localStorage.getItem(AB_KEY)||"{}")}}catch(e){}}
+function saveAuto(){try{localStorage.setItem(AB_KEY,JSON.stringify(autoCfg))}catch(e){}}
+function autoStatus(){$("ab-status").textContent=autoCfg.last?"Last automatic backup: "+new Date(autoCfg.last).toLocaleString("en-IN"):"No automatic backup yet."}
+function slotTime(now){const[h,m]=(autoCfg.time||"21:00").split(":").map(Number);const d=new Date(now);d.setHours(h,m,0,0);if(d.getTime()>now)d.setDate(d.getDate()-1);return d.getTime()}
+async function checkAuto(){if(!autoCfg.on)return;const now=Date.now();if(autoCfg.last>=slotTime(now))return;autoCfg.last=now;saveAuto();autoStatus();await backup()}
+function setAuto(){autoCfg.on=$("ab-on").checked;autoCfg.time=$("ab-time").value||"21:00";saveAuto();autoStatus();checkAuto()}
+const MFULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+let rpYear=null,rpMonth=null;
+const rzero=()=>({jobs:[],pays:[],rev:0,parts:0,rec:0});
+const rpPL=t=>t.rev-t.parts;
+const kc=(ic,cls,label,val)=>`<div class="kc"><span class="ico ${cls}"><svg><use href="#i-${ic}"/></svg></span><span class="lbl">${label}</span><b>${val}</b></div>`;
+function legacyISO(r,i){const iso=isoFromDisplay(r.createdDate);return iso?new Date(iso+"T12:00:00").toISOString():new Date(Date.now()-i*60000).toISOString()}
+function jobDate(r){const t=r.createdAt?new Date(r.createdAt):null;if(t&&!isNaN(t))return t;const iso=isoFromDisplay(r.createdDate);return iso?new Date(iso+"T12:00:00"):null}
+function payDate(p){const iso=isoFromDisplay(p.date);return iso?new Date(iso+"T12:00:00"):null}
+function rpBuild(){const M={},Y={},mk=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),yk=d=>String(d.getFullYear()),at=(o,k)=>o[k]||(o[k]=rzero());
+  repairs.forEach(r=>{const d=jobDate(r);if(!d)return;const m=money(r),a=at(M,mk(d)),y=at(Y,yk(d));[a,y].forEach(t=>{t.jobs.push({r,m,d});t.rev+=m.final;t.parts+=m.parts})});
+  repairs.forEach(r=>(r.payments||[]).forEach(p=>{const d=payDate(p);if(!d)return;const amt=num(p.amount),a=at(M,mk(d)),y=at(Y,yk(d));[a,y].forEach(t=>{t.pays.push({r,p,d,amt});t.rec+=amt})}));
+  return{M,Y}}
+function rpRow(label,a,maxAbs,click,on){const pl=rpPL(a),w=Math.round(Math.abs(pl)/maxAbs*100),n=a.jobs.length;return `<button class="mrow${on?" on":""}" onclick="${click}"><div class="mtop"><b>${label}</b><span class="sub">${n} job${n===1?"":"s"}</span><span class="${pl<0?"loss":"gain"}">${pl<0?"Loss ":""}${rs(Math.abs(pl))}</span></div><div class="mbar"><i class="${pl<0?"neg":"pos"}" style="width:${w}%"></i></div><div class="msub"><span>Revenue ${rs(a.rev)}</span><span>Parts ${rs(a.parts)}</span><span>Received ${rs(a.rec)}</span></div></button>`}
+function rpDetail(k,a){const pl=rpPL(a),title=MFULL[+k.slice(5,7)-1]+" "+k.slice(0,4);
+  const jobs=a.jobs.slice().sort((x,y)=>x.d-y.d),pays=a.pays.slice().sort((x,y)=>x.d-y.d);
+  const jl=jobs.map(j=>{const jp=j.m.final-j.m.parts;return `<div class="jrow"><div><b>${esc(j.r.jobId)}</b><div class="sub">${esc((j.r.brand||"")+" "+(j.r.model||""))} · ${esc(j.r.name||"")}</div><div class="sub">Revenue ${rs(j.m.final)} · Parts ${rs(j.m.parts)}</div></div><div class="amt">${jp<0?`<span class="loss">Loss ${rs(-jp)}</span>`:`<span class="gain">Profit ${rs(jp)}</span>`}</div></div>`}).join("");
+  const pq=pays.map(x=>`<div class="jrow"><div><b>${esc(x.p.date)}</b><div class="sub">${esc(x.r.jobId)} · ${esc(x.p.method||"")}</div></div><div class="amt">${rs(x.amt)}</div></div>`).join("");
+  return {title,html:`<div class="kcards">${kc("chart","blue","Revenue",rs(a.rev))}${kc("box","amber","Parts cost",rs(a.parts))}${kc("trend",pl<0?"red":"green",pl<0?"Loss":"Profit",rs(Math.abs(pl)))}${kc("wallet","green","Received",rs(a.rec))}</div>`+
+    `<h3 class="rp-h">Jobs created this month</h3>`+(jobs.length?`<div class="jlist">${jl}</div>`:`<p class="empty">No jobs created this month.</p>`)+
+    `<h3 class="rp-h">Payments received this month</h3>`+(pays.length?`<div class="jlist">${pq}</div>`:`<p class="empty">No payments this month.</p>`)};
+}
+function renderReports(){
+  const T=rpBuild(),cy=String(new Date().getFullYear()),ys=[...new Set([...Object.keys(T.Y),cy])].sort((a,b)=>b-a),sel=$("rp-year");
+  if(!rpYear||!ys.includes(rpYear))rpYear=ys.includes(cy)?cy:ys[0];
+  if(sel.dataset.ys!==ys.join()){sel.innerHTML=ys.map(y=>`<option value="${y}">${y}</option>`).join("");sel.dataset.ys=ys.join()}
+  sel.value=rpYear;
+  const months=Object.keys(T.M).filter(k=>k.startsWith(rpYear+"-")).sort().reverse();
+  if(!months.includes(rpMonth))rpMonth=months[0]||null;
+  const ya=T.Y[rpYear]||rzero(),pl=rpPL(ya);
+  $("rp-title").textContent=rpYear;
+  $("rp-sub").textContent=ya.jobs.length+" jobs this year · "+(pl<0?"loss of "+rs(-pl):"profit of "+rs(pl));
+  $("rp-kpis").innerHTML=kc("chart","blue","Revenue",rs(ya.rev))+kc("wallet","green","Received",rs(ya.rec))+kc("box","amber","Parts cost",rs(ya.parts))+kc("trend",pl<0?"red":"green",pl<0?"Loss":"Profit",rs(Math.abs(pl)));
+  const maxM=Math.max(1,...months.map(k=>Math.abs(rpPL(T.M[k])))),maxY=Math.max(1,...ys.map(y=>Math.abs(rpPL(T.Y[y]||rzero()))));
+  $("rp-mcount").textContent=months.length?months.length+" with activity":"";
+  $("rp-months").innerHTML=months.length?months.map(k=>rpRow(MFULL[+k.slice(5,7)-1],T.M[k],maxM,`openMonth('${k}')`,k===rpMonth)).join(""):`<p class="empty">No jobs or payments in ${rpYear}.</p>`;
+  if(rpMonth){const d=rpDetail(rpMonth,T.M[rpMonth]);$("rp-dtitle").textContent=d.title+" details";$("rp-detail").innerHTML=d.html}
+  else{$("rp-dtitle").textContent="Month details";$("rp-detail").innerHTML=`<p class="empty">No activity in ${rpYear}.</p>`}
+  $("rp-years").innerHTML=ys.map(y=>rpRow(y,T.Y[y]||rzero(),maxY,`setYear('${y}')`,y===rpYear)).join("");
+}
+function setYear(y){rpYear=String(y);rpMonth=null;renderReports()}
+function openMonth(k){rpMonth=k;renderReports();const el=$("rp-detail-card");if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}
+function saveSettings(e){e.preventDefault();const s={...shop};SHOP_KEYS.forEach(k=>s[k]=$("s-"+k).value.trim());s.nextNo=Math.floor(num($("s-next").value))||1;saveShopData(s);toast("Shop settings saved.")}
+
+async function backup(){
+  try{
+    const dl={save:async o=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([o.data],{type:"application/json"}));a.download=o.filename;document.body.appendChild(a);a.click();a.remove()}};
+    if(!dl)return toast("Backup download isn’t available in this view.");
+    await dl.save({filename:"crescent_mobiles_backup_"+new Date().toLocaleDateString("en-CA")+".json",data:JSON.stringify({repairs,settings:shop,photos:await photoAll().catch(()=>[])},null,2)});
+    toast("Backup saved.");
+  }catch(e){toast(e&&e.code==="declined"?"Backup cancelled.":"Backup couldn’t be saved here.")}
+}
+function restore(){
+  const f=$("restore-file").files[0];if(!f)return toast("Choose a backup file first.");
+  const rd=new FileReader();
+  rd.onload=()=>{
+    let d;try{d=JSON.parse(rd.result)}catch(x){return toast("That file isn’t a valid backup.")}
+    if(!d||!Array.isArray(d.repairs)||!d.settings)return toast("Invalid backup file format.");
+    const items=d.repairs.filter(x=>x&&x.id).map((x,i)=>{const y={...x,photos:(Array.isArray(x.photos)?x.photos:[]).filter(p=>p&&typeof p==="object"&&p.id)};return{...y,createdAt:y.createdAt||legacyISO(y,i)}});
+    const keep=new Set(items.map(x=>x.id)),gone=repairs.map(x=>x.id).filter(id=>!keep.has(id));
+    repairs=items;shop=normShop(d.settings);applyShop();fillShop();render();if(Array.isArray(d.photos))photoReplace(d.photos).catch(()=>{});
+    queue(async()=>{if(!db)return;for(const id of gone)await db.collection("repairs").doc(id).delete();for(const r of items)await db.collection("repairs").doc(r.id).set(r);await db.doc("settings/shop").set(shop)});
+    toast("Restored "+items.length+" records.");
+  };
+  rd.readAsText(f);
+}
+
+document.addEventListener("click",e=>{const el=e.target.closest("[data-id]");if(el)openRepair(el.dataset.id)});
+document.addEventListener("click",e=>{const ph=e.target.closest("[data-ph]");if(ph)openPhoto(ph.dataset.ph)});
+window.addEventListener("error",e=>toast("Error: "+(e.message||"unknown")));
+window.addEventListener("unhandledrejection",e=>toast("Error: "+((e.reason&&e.reason.message)||e.reason||"unknown")));
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("on")}));
+$("f-status").innerHTML=$("ms-sel").innerHTML=STATUSES.map(s=>`<option>${s}</option>`).join("");
+buildPills();applyShop();fillShop();render();start();loadAuto();$("ab-on").checked=autoCfg.on;$("ab-time").value=autoCfg.time;autoStatus();setInterval(checkAuto,60000);setTimeout(checkAuto,2000);
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){})}</script>
+</body>
+</html>
